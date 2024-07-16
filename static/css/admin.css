@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap');
+body {
+    font-family: 'Syne', sans-serif;
+    background-color: #190217;
+    color: #474A57;
+}
+
+h1, h2, h3, h4 {
+    font-weight: 800; /* Extra Bold */
+    color: #FFC107;
+}
+
+h5 {
+    font-weight: 600; /* Semi Bold */
+    color: #D9DBE1;
+}
+
+h6 {
+    font-weight: 500; /* Medium */
+    color: #F02528;
+}
+
+p {
+    font-weight: 500; /* Medium */
+    color: #18191F;
+}

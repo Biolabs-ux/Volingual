@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+{% load static %}
+{% block title %}{{ title }} | {% trans "VOLINGUAL | ADMIN" %}{% endblock %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}"/>
+{% endblock %}
+{% block branding %}
+    <h1 id="site-name">{% trans "VOLINGUAL | ADMIN" %}</h1>
+{% endblock %}
+{% block nav-global %}{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block content %}
+    <div id="content" class="colM">
+        <div id="content-main">
+            {% block content-main %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block footer %}{% endblock %}
+
