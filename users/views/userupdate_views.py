@@ -1,24 +1,34 @@
-# userupdate_views.py
-from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
+from ..serializers.update_user_info_serializers import UpdateUserInfoSerializer
 from ..models import CustomUser
-from ..serializers.user_serializers import CustomUserSerializer
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
-class UserUpdateView(APIView):
-    def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        user = CustomUser.objects.filter(email=email).first()
-        if user:
-            if not request.data:  # Check if any data was provided in the request
-                return Response({'status': 'error', 'message': 'No data provided for update'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            serializer = CustomUserSerializer(user, data=request.data,
-                                              partial=True)  # Set partial=True to update a subset of the fields
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({'status': 'error', 'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+class UserUpdateView(GenericAPIView):
+    serializer_class = UpdateUserInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        request_body=UpdateUserInfoSerializer,
+        operation_id='Update User Info',
+        responses={
+            200: openapi.Response('User updated', UpdateUserInfoSerializer),
+            400: 'Invalid data'
+        }
+    )
+    def get_object(self):
+        user_id = self.kwargs.get('pk')
+        return CustomUser.objects.get(id=user_id)
+
+    def put(self, request, *args, **kwargs):
+        user = self.get_object()
+        if request.user != user:
+            return Response({"error": "You do not have permission to update this user."}, status=403)
+        serializer = self.get_serializer(user, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)

@@ -1,27 +1,34 @@
-# user_delete_views.py
-from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.hashers import check_password
-from ..models import CustomUser
 from ..serializers.user_delete_serializers import UserDeleteSerializer
+from ..models import CustomUser
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
-class UserDeleteView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = UserDeleteSerializer(data=request.data)
+class UserDeleteView(GenericAPIView):
+    serializer_class = UserDeleteSerializer
+
+    @swagger_auto_schema(
+        request_body=UserDeleteSerializer,
+        operation_id='Delete User',
+        responses={
+            204: openapi.Response('User deleted', UserDeleteSerializer),
+            404: 'Email not found in our system. Enter a valid email.',
+            400: 'Invalid email'
+        }
+    )
+    def delete(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            email = serializer.validated_data.get('email')
-            password = serializer.validated_data.get('password')
-            user = CustomUser.objects.filter(email=email).first()
-            if user:
-                if check_password(password, user.password):
-                    user.delete()
-                    return Response({'status': 'success'}, status=status.HTTP_200_OK)
-                else:
-                    return Response({'status': 'error', 'message': 'Incorrect password'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({'status': 'error', 'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            email = serializer.validated_data['email']
+            try:
+                user = CustomUser.objects.get(email=email)
+                user.delete()
+                return Response({"message": f"The account tied to {email} has been deleted."},
+                                status=status.HTTP_204_NO_CONTENT)
+            except CustomUser.DoesNotExist:
+                return Response({"message": "Email not found in our system. Enter a valid email."},
+                                status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

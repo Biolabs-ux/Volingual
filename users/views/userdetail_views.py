@@ -1,16 +1,21 @@
-# Backend/volingual/users/views/userdetail_views.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
+from ..serializers.user_info_serializers import UserInfoSerializer
 from ..models import CustomUser
-from ..serializers.user_serializers import CustomUserSerializer
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
-class UserDetailView(APIView):
-    def get(self, request, *args, **kwargs):
-        email = request.query_params.get('email')
-        user = CustomUser.objects.filter(email=email).first()
-        if user:
-            serializer = CustomUserSerializer(user)
-            return Response(serializer.data, status=200)
-        else:
-            return Response({'status': 'error', 'message': 'User not found'}, status=404)
+class UserDetailView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserInfoSerializer
+
+    @swagger_auto_schema(
+        operation_id='Get User Info',
+        responses={
+            200: openapi.Response('User Info', UserInfoSerializer),
+            404: 'User not found'
+        }
+    )
+    def get_object(self):
+        return self.request.user
