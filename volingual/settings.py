@@ -193,10 +193,14 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),  # 30 days for access token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),  # 60 days for refresh token, adjust if needed
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    # You can keep other settings as they are or adjust them according to your needs
 }
+
 
 CSRF_COOKIE_NAME = "csrftoken"
 
