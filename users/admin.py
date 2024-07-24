@@ -1,6 +1,8 @@
 from django.contrib import admin, messages
 from django import forms
 from .models import CustomUser
+from .models import Translation
+
 
 admin.site.site_header = "Volingual Admin Dashboard"
 admin.site.site_title = "Volingual Admin Portal"
@@ -67,3 +69,4 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Translation)

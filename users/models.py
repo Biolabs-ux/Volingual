@@ -6,6 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
@@ -102,3 +103,13 @@ class OneTimePassword(models.Model):
     class Meta:
         verbose_name = _('one time password')
         verbose_name_plural = _('one time passwords')
+
+
+class Translation(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='translations')
+    input_text = models.TextField()
+    translated_text = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Translation by {self.user.email} on {self.created_at}"

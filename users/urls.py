@@ -10,6 +10,8 @@ from .views.user_delete_views import UserDeleteView
 from django.urls import path, re_path
 from .views.views import SignupUserView
 from .views.views import VerifyUserEmail
+from .views.translate_sentence import TranslationAPIView
+from .views.translation_history import TranslationHistoryAPIView
 
 urlpatterns = [
     path('signup/', SignupUserView.as_view(), name='signup'),
@@ -23,6 +25,8 @@ urlpatterns = [
     path('delete-account/', UserDeleteView.as_view(), name='delete-account'),
     path('user-update/', UserUpdateView.as_view(), name='user-update'),
     path('user-detail/', UserDetailView.as_view(), name='user-detail'),
+    path('translate/', TranslationAPIView.as_view(), name='translate_api'),
+    path('translate-history/', TranslationHistoryAPIView.as_view(), name="translate-history")
     # path('password-change/', PasswordChangeView.as_view(), name='password-change'),
     # path('user-update-email/', UserUpdateEmailView.as_view(), name='user-update-email'),
     # other url patterns...
